@@ -4,14 +4,19 @@ import { useState, useEffect } from 'react';
 import { firestore } from "@/firebase";
 import { Box, Modal, Stack, TextField, Typography, Button } from "@mui/material";
 import { query, collection, doc, getDoc, setDoc, deleteDoc, getDocs, updateDoc } from "firebase/firestore";
+import { UserAuth } from "./Context/AuthContext";
 
 export default function Home() {
   const [inventory, setInventory] = useState([]);
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState('');
+  const { user } = UserAuth(); // Get user info from AuthContext
+  const userId = user?.uid; // Assuming `uid` is the user ID
 
   const updateInventory = async () => {
-    const snapshot = query(collection(firestore, 'inventory'));
+    if (!userId) return; // Ensure user ID is available
+
+    const snapshot = query(collection(firestore, 'users', userId, 'inventory'));
     const docs = await getDocs(snapshot);
     const inventoryList = [];
     docs.forEach((doc) => {
@@ -25,7 +30,9 @@ export default function Home() {
   };
 
   const addItem = async (item) => {
-    const docRef = doc(collection(firestore, 'inventory'), item);
+    if (!userId) return; // Ensure user ID is available
+
+    const docRef = doc(collection(firestore, 'users', userId, 'inventory'), item);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -38,7 +45,9 @@ export default function Home() {
   };
 
   const removeItem = async (item) => {
-    const docRef = doc(collection(firestore, 'inventory'), item);
+    if (!userId) return; // Ensure user ID is available
+
+    const docRef = doc(collection(firestore, 'users', userId, 'inventory'), item);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -54,7 +63,7 @@ export default function Home() {
 
   useEffect(() => {
     updateInventory();
-  }, []);
+  }, [userId]);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
