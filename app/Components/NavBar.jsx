@@ -45,8 +45,8 @@ const NavBar = () => {
     <AppBar
       position="static"
       sx={{
-        backgroundColor: '#000', // Black background
-        color: '#fff', // White text color
+        backgroundColor: '#141204', // Black background
+        color: '#F5F5EC', // White text color
       }}
     >
       <Toolbar>
@@ -59,7 +59,7 @@ const NavBar = () => {
               width: '100%',
             }}
           >
-            {/* Left side with Home and Profile links */}
+            {/* Left side with Home, Profile and Recipe links */}
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Link href="/" passHref>
                 <Button
@@ -71,6 +71,19 @@ const NavBar = () => {
                   }}
                 >
                   Home
+                </Button>
+              </Link>
+
+              <Link href="/recipe" passHref>
+                <Button
+                  sx={{
+                    color: '#fff', // White text color
+                    '&:hover': {
+                      backgroundColor: '#333', // Darker shade for hover effect
+                    },
+                  }}
+                >
+                  Recipe
                 </Button>
               </Link>
               <Link href="/profile" passHref>
@@ -85,6 +98,8 @@ const NavBar = () => {
                   Profile
                 </Button>
               </Link>
+
+      
             </Box>
 
             {/* Right side with Login and Sign Up buttons or user info */}

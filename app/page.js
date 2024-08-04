@@ -2,9 +2,40 @@
 import Image from "next/image";
 import { useState, useEffect } from 'react';
 import { firestore } from "@/firebase";
-import { Box, Modal, Stack, TextField, Typography, Button } from "@mui/material";
+import { Box, Modal, Stack, TextField, Typography, Button, ButtonGroup } from "@mui/material";
 import { query, collection, doc, getDoc, setDoc, deleteDoc, getDocs, updateDoc } from "firebase/firestore";
 import { UserAuth } from "./Context/AuthContext";
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+
+// Grabbing current inventory for recipe page!
+export const useInventoryData = () => {
+  const [inventory, setInventory] = useState([]);
+  const { user } = UserAuth(); 
+  const userId = user?.uid;
+
+  const updateInventory = async () => {
+    if (!userId) return;
+
+    const snapshot = query(collection(firestore, 'users', userId, 'inventory'));
+    const docs = await getDocs(snapshot);
+    const inventoryList = [];
+    docs.forEach((doc) => {
+      inventoryList.push({
+        name: doc.id,
+        ...doc.data(),
+      });
+    });
+    setInventory(inventoryList);
+  };
+
+  useEffect(() => {
+    updateInventory();
+  }, [userId]);
+
+  return inventory;
+};
 
 export default function Home() {
   const [inventory, setInventory] = useState([]);
@@ -26,7 +57,6 @@ export default function Home() {
       });
     });
     setInventory(inventoryList);
-    console.log(inventoryList);
   };
 
   const addItem = async (item) => {
@@ -67,7 +97,7 @@ export default function Home() {
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
+  console.log(inventory)
   return (
     <Box
       width="100vw"
@@ -84,8 +114,8 @@ export default function Home() {
           top="50%"
           left="50%"
           width={400}
-          bgcolor="white"
-          border="2px solid #000"
+          bgcolor="#F5F5EC"
+          border="#F5F5EC"
           boxShadow={24}
           p={4}
           display="flex"
@@ -103,26 +133,34 @@ export default function Home() {
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
               label="Item Name"
+              sx={{color:'#141204'}}
             />
-            <Button
+            <Button 
               variant="outlined"
               onClick={() => {
                 addItem(itemName);
                 setItemName("");
                 handleClose();
               }}
+              sx={{color:'#141204'}}
             >
               Add
             </Button>
           </Stack>
         </Box>
       </Modal>
-      <Button variant="contained" onClick={() => handleOpen()}>
-        Add New Item
-      </Button>
-      <Box border='1px solid #333'>
-        <Box width="800px" height="100px" bgcolor="#ADD8E6" display="flex" alignItems="center" justifyContent="center">
-          <Typography variant='h2' color='#333'>
+      <ButtonGroup variant="text"  aria-label="Basic button group" >
+        <Button sx={{ color: '#141204' }} onClick={() => handleOpen()}>
+          Add New Item
+        </Button>
+       
+        <Button sx={{ color: '#141204' }} onClick={() => handleOpen()}>
+          Upload Photo
+        </Button>
+      </ButtonGroup>
+      <Box border='#141204'>
+        <Box width="800px" height="100px" bgcolor="#141204" display="flex" alignItems="center" justifyContent="center">
+          <Typography variant='h2' color='#F5F5EC'>
             Inventory Items
           </Typography>
         </Box>
@@ -137,25 +175,32 @@ export default function Home() {
               display="flex"
               alignItems="center"
               justifyContent="space-between"
-              bgcolor="f0f0f0"
+              bgcolor="#141204"
               borderRadius={2}
               paddingRight={2}
-              paddingLeft={2}
-            >
-              <Typography variant="h3" color="#333" textAlign="center">
+              paddingLeft={2}>
+
+              <Typography variant="h3" color="#F5F5EC" textAlign="center">
                 {name.charAt(0).toUpperCase() + name.slice(1)}
               </Typography>
-              <Typography variant="h3" color="#333" textAlign="center">
+              <Typography variant="h3" color="#F5F5EC" textAlign="center">
                 {quantity}
               </Typography>
 
               <Stack direction="row" spacing={2}>
-                <Button variant="contained" onClick={() => addItem(name)}>
-                  Add
-                </Button>
-                <Button variant="outlined" onClick={() => removeItem(name)}>
-                  Remove
-                </Button>
+              <IconButton
+                aria-label="add"
+                onClick={() => addItem(name)}
+                sx={{ color: '#F5F5EC' }}>
+                <AddIcon />
+              </IconButton>
+
+              <IconButton
+                aria-label="delete"
+                onClick={() => removeItem(name)}
+                sx={{ color: '#F5F5EC' }}>
+              <DeleteIcon />
+            </IconButton>
               </Stack>
             </Box>
           ))}
