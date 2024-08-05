@@ -2,7 +2,7 @@
 import "../globals.css";
 import React, { useState } from 'react';
 import { useInventoryData } from '/Users/aryapatel/pantry-pal/app/page.js';
-import { checkedIcon, icon, TextField, Autocomplete, Box, Typography, Button, List, ListItem, Checkbox } from '@mui/material';
+import { checkedIcon, icon, TextField, Autocomplete, Box, Typography, Button, Checkbox } from '@mui/material';
 import axios from 'axios';
 
 const RecipePage = () => {
@@ -45,48 +45,44 @@ const RecipePage = () => {
       width="100vw"
       height="100vh"
       display="flex"
-      marginTop="10%"
+      marginTop="5%"
     >
       {/* Inventory List on the left side */}
       <Box
-        sx={{ color: '#141204' }} 
+        sx={{ color: '#333131' }} 
         width="30%"
         display="flex"
         flexDirection="column"
-        alignItems="flex-start"
-        padding={2}
-        borderRight="1px solid #F5F5EC"
+        padding={6}
+        borderRight="1px solid #333131"
       >
-        <Typography variant="h6">Current Inventory</Typography>
-         <Autocomplete
-      multiple
-      id="checkboxes-tags"
-      options={inventory}
-      disableCloseOnSelect
-      getOptionLabel={(item) => item.name}
-      renderOption={(props, option, { selected }) => {
-        const { key, ...optionProps } = props;
-        return (
-          <li key={key} {...optionProps}>
-            <Checkbox
-              icon={icon}
-              checkedIcon={checkedIcon}
-              style={{ marginRight: 8 }}
-              checked={selected}
-              sx={{ color: '#141204' }} 
-            />
-            {option.title}
-          </li>
-        );
-      }}
-      style={{ width: "100%" }}
-      renderInput={(params) => (
-        <TextField {...params} label="Checkboxes" placeholder="Favorites" />
-      )}
-    />
-
-        
-
+        <Typography sx={{color:'#333131'}} variant="h6" marginBottom={"5%"}>Current Inventory</Typography>
+        <Autocomplete
+          multiple
+          id="checkboxes-tags"
+          options={inventory}
+          disableCloseOnSelect
+          getOptionLabel={(item) => item.name}
+          renderOption={(props, option, { selected }) => {
+            const { key, ...optionProps } = props;
+            return (
+              <li key={key} {...optionProps} style={{ color: '#333131' }}>
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                  sx={{ color: '#333131' }} 
+                />
+                {option.name} {/* Adjusted from {option.title} to {option.name} */}
+              </li>
+            );
+          }}
+          style={{ width: "100%" }}
+          renderInput={(params) => (
+            <TextField {...params} label="Current Inventory" placeholder="Pick your ingredients!" />
+          )}
+        />
       </Box>
 
       {/* Recipe Generator on the right side */}
@@ -95,18 +91,19 @@ const RecipePage = () => {
         display="flex"
         flexDirection="column"
         alignItems="center"
-
         padding={2}
       >
-        <Typography sx={{ color: '#141204' }}  variant="h2">Recipe Generator</Typography>
+        <Typography sx={{color:'#333131'}} variant="h2">Recipe Generator</Typography>
         <Button
           variant="text"
-          color="primary"
+          sx={{color:'#333131'}}
           onClick={() => fetchRecipe()}
         >
           Generate Recipes
         </Button>
       </Box>
+
+      
     </Box>
   );
 };

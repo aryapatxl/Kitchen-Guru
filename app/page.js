@@ -1,16 +1,14 @@
 'use client'
-import "./globals.css";
-import Image from "next/image";
-import { useState, useEffect } from 'react';
-import { firestore } from "@/firebase";
+import React, { useState, useEffect } from 'react';
 import { Box, Modal, Stack, TextField, Typography, Button, ButtonGroup } from "@mui/material";
-import { query, collection, doc, getDoc, setDoc, deleteDoc, getDocs, updateDoc } from "firebase/firestore";
+import { DataGrid } from '@mui/x-data-grid';
+import { firestore } from "@/firebase";
+import { query, collection, doc, getDoc, setDoc, deleteDoc, getDocs, updateDoc } from 'firebase/firestore';
 import { UserAuth } from "./Context/AuthContext";
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
-// Grabbing current inventory for recipe page!
 export const useInventoryData = () => {
   const [inventory, setInventory] = useState([]);
   const { user } = UserAuth(); 
@@ -24,6 +22,7 @@ export const useInventoryData = () => {
     const inventoryList = [];
     docs.forEach((doc) => {
       inventoryList.push({
+        id: doc.id, // DataGrid needs an 'id' field
         name: doc.id,
         ...doc.data(),
       });
@@ -53,6 +52,7 @@ export default function Home() {
     const inventoryList = [];
     docs.forEach((doc) => {
       inventoryList.push({
+        id: doc.id, // DataGrid needs an 'id' field
         name: doc.id,
         ...doc.data(),
       });
@@ -98,16 +98,47 @@ export default function Home() {
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  console.log(inventory)
+
+  const columns = [
+    { field: 'name', headerName: 'Item Name',flex:1, headerAlign: 'center', align: 'center'},
+    { field: 'quantity', headerName: 'Quantity', flex:1, headerAlign: 'center', align: 'center'  },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      flex:1, 
+      headerAlign: 'center', 
+      align: 'right',
+   
+      renderCell: (params) => (
+        <Stack direction="row" spacing={2}>
+          <IconButton
+            aria-label="add"
+            onClick={() => addItem(params.row.name)}
+            sx={{ color: '#333131' }}
+          >
+            <AddIcon />
+          </IconButton>
+          <IconButton
+            aria-label="delete"
+            onClick={() => removeItem(params.row.name)}
+            sx={{ color: '#333131' }}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Stack>
+      ),
+    },
+  ];
+
   return (
     <Box
       width="100vw"
       height="100vh"
       display="flex"
       flexDirection="column"
-      justifyContent="center"
+      marginTop={"8%"}
       alignItems="center"
-      gap={2}
+      gap={1}
     >
       <Modal open={open} onClose={handleClose}>
         <Box
@@ -115,8 +146,8 @@ export default function Home() {
           top="50%"
           left="50%"
           width={400}
-          bgcolor="#F5F5EC"
-          border="#F5F5EC"
+          bgcolor="#F6F5F3"
+          border="#F6F5F3"
           boxShadow={24}
           p={4}
           display="flex"
@@ -134,78 +165,80 @@ export default function Home() {
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
               label="Item Name"
-              sx={{color:'#141204'}}
+              sx={{color:'#333131'}}
             />
             <Button 
               variant="outlined"
+              
               onClick={() => {
                 addItem(itemName);
                 setItemName("");
                 handleClose();
               }}
-              sx={{color:'#141204'}}
+              sx={{color:'#333131'}}
             >
               Add
             </Button>
           </Stack>
         </Box>
       </Modal>
-      <ButtonGroup variant="text"  aria-label="Basic button group" >
-        <Button sx={{ color: '#141204' }} onClick={() => handleOpen()}>
+      <ButtonGroup variant="text" aria-label="Basic button group" >
+        <Button sx={{ color: '#333131',
+                  '&:hover': {
+                      backgroundColor: '#E6E2DA' }}} onClick={() => handleOpen()}>
           Add New Item
         </Button>
-       
-        <Button sx={{ color: '#141204' }} onClick={() => handleOpen()}>
+        <Button sx={{ color: '#333131',
+                  '&:hover': {
+                      backgroundColor: '#E6E2DA' }}} onClick={() => handleOpen()}>
           Upload Photo
         </Button>
       </ButtonGroup>
-      <Box border='#141204'>
-        <Box width="800px" height="100px" bgcolor="#141204" display="flex" alignItems="center" justifyContent="center">
-          <Typography variant='h2' color='#F5F5EC'>
+      <Box width="800px" height="400px" bgcolor="#F6F5F3" display="flex" flexDirection="column">
+        <Box
+          width="100%"
+          height="60px"
+          bgcolor="#F6F5F3"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Typography variant='h2' color='#333131'>
             Inventory Items
           </Typography>
         </Box>
+        <Box
+          width="100%"
+          height="calc(100% - 60px)"
+          marginTop="5%"
+        >
+          <DataGrid
+            rows={inventory}
+            columns={columns}
+            pageSize={10}
+            rowsPerPageOptions={[5]}
+            disableSelectionOnClick
 
-        <Stack width="800px" height="300px" spacing={.5} overflow="auto">
-          {inventory.map(({ name, quantity }) => (
-            <Box
-              key={name}
-              width="95%"
-              maxWidth="800px"
-              minHeight="100px"
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              bgcolor="#141204"
-              borderRadius={2}
-              paddingRight={2}
-              paddingLeft={2}>
-
-              <Typography variant="h3" color="#F5F5EC" textAlign="center">
-                {name.charAt(0).toUpperCase() + name.slice(1)}
-              </Typography>
-              <Typography variant="h3" color="#F5F5EC" textAlign="center">
-                {quantity}
-              </Typography>
-
-              <Stack direction="row" spacing={2}>
-              <IconButton
-                aria-label="add"
-                onClick={() => addItem(name)}
-                sx={{ color: '#F5F5EC' }}>
-                <AddIcon />
-              </IconButton>
-
-              <IconButton
-                aria-label="delete"
-                onClick={() => removeItem(name)}
-                sx={{ color: '#F5F5EC' }}>
-              <DeleteIcon />
-            </IconButton>
-              </Stack>
-            </Box>
-          ))}
-        </Stack>
+            sx={{
+              border: 'none',
+              bgcolor: '#F6F5F3',
+              
+              '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: '#E6E2DA',
+            },
+              '& .MuiDataGrid-cell': {
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            },
+            '& .MuiDataGrid-columnHeaders': {
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            },
+            }}
+          />
+        </Box>
       </Box>
     </Box>
   );

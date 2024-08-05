@@ -45,11 +45,11 @@ const NavBar = () => {
     <AppBar
       position="static"
       sx={{
-        backgroundColor: '#141204', // Black background
-        color: '#F5F5EC', // White text color
+        backgroundColor: '#F6F5F3', 
+        color: '#333131',
       }}
     >
-      <Toolbar>
+      <Toolbar variant="dense">
         <Container maxWidth="lg">
           <Box
             sx={{
@@ -64,9 +64,9 @@ const NavBar = () => {
               <Link href="/" passHref>
                 <Button
                   sx={{
-                    color: '#fff', // White text color
+                    color: '#333131', // White text color
                     '&:hover': {
-                      backgroundColor: '#333', // Darker shade for hover effect
+                      backgroundColor: '#E6E2DA', // Darker shade for hover effect
                     },
                   }}
                 >
@@ -77,9 +77,9 @@ const NavBar = () => {
               <Link href="/recipe" passHref>
                 <Button
                   sx={{
-                    color: '#fff', // White text color
+                    color: '#333131', // White text color
                     '&:hover': {
-                      backgroundColor: '#333', // Darker shade for hover effect
+                      backgroundColor: '#E6E2DA', // Darker shade for hover effect
                     },
                   }}
                 >
@@ -89,9 +89,9 @@ const NavBar = () => {
               <Link href="/profile" passHref>
                 <Button
                   sx={{
-                    color: '#fff', // White text color
+                    color: '#333131', // White text color
                     '&:hover': {
-                      backgroundColor: '#333', // Darker shade for hover effect
+                      backgroundColor: '#E6E2DA', // Darker shade for hover effect
                     },
                   }}
                 >
@@ -107,9 +107,9 @@ const NavBar = () => {
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Button
                   sx={{
-                    color: '#fff', // White text color
+                    color: '#333131', // White text color
                     '&:hover': {
-                      backgroundColor: '#333', // Darker shade for hover effect
+                      backgroundColor: '#E6E2DA', // Darker shade for hover effect
                     },
                   }}
                   onClick={handleSignIn}
@@ -118,9 +118,9 @@ const NavBar = () => {
                 </Button>
                 <Button
                   sx={{
-                    color: '#fff', // White text color
+                    color: '#333131', // White text color
                     '&:hover': {
-                      backgroundColor: '#333', // Darker shade for hover effect
+                      backgroundColor: '#E6E2DA', // Darker shade for hover effect
                     },
                   }}
                   onClick={handleSignIn}
@@ -133,9 +133,9 @@ const NavBar = () => {
                 <p>Welcome, {user.displayName}</p>
                 <Button
                   sx={{
-                    color: '#fff', // White text color
+                    color: '#333131', // White text color
                     '&:hover': {
-                      backgroundColor: '#333', // Darker shade for hover effect
+                      backgroundColor: '#E6E2DA', // Darker shade for hover effect
                     },
                   }}
                   onClick={handleSignOut}

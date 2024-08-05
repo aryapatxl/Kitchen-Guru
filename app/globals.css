@@ -1,4 +1,6 @@
 
+
+
 :root {
   --max-width: 1100px;
   --border-radius: 12px;
@@ -42,14 +44,9 @@
 }
 
 body {
-  background-color: #141204 ;
+  background-color: #F6F5F3 ;
 }
 
-.noto-serif-display-h2 {
-  font-family: "Noto Serif Display", serif;
-  font-optical-sizing: auto;
-  font-weight: 100;
-  font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
+h3, h6 {
+  color: #333131;
 }
