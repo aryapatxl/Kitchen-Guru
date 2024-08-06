@@ -10,35 +10,33 @@ import {
   Box,
   Typography,
   Button,
-  Checkbox
+  Checkbox,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia
 } from '@mui/material';
 import axios from 'axios';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 
 const RecipePage = () => {
   const inventory = useInventoryData();
   const [selectedItems, setSelectedItems] = useState([]);
   const [recipes, setRecipes] = useState([]); // State to hold fetched recipes
 
-  // Function to handle item selection
-  const handleToggle = (item) => {
-    setSelectedItems((prevSelected) =>
-      prevSelected.includes(item)
-        ? prevSelected.filter((i) => i !== item)
-        : [...prevSelected, item]
-    );
+  // Handle change event for Autocomplete
+  const handleSelectionChange = (event, value) => {
+    setSelectedItems(value);
   };
 
   // Function to make API call
   const fetchRecipe = async () => {
     try {
+      const ingredients = selectedItems.map(item => item.name).join(','); // Convert selected items to a comma-separated string
       const response = await axios.get('https://api.spoonacular.com/recipes/findByIngredients', {
         params: {
-          ingredients: "grapes, wine, bread, butter",
-          number: 3,
+          ingredients: ingredients, // Use the selected ingredients
+          ignorePantry: true, // Ignore pantry items
+          number: 4,
           apiKey: process.env.NEXT_PUBLIC_API_KEY, // API key as a query parameter
         },
         headers: {
@@ -60,11 +58,6 @@ const RecipePage = () => {
       console.error('Error fetching data:', error);
     }
   };
-
-  // Use useEffect to fetch recipes when the component mounts
-  useEffect(() => {
-    fetchRecipe();
-  }, []);
 
   return (
     <Box
@@ -93,6 +86,7 @@ const RecipePage = () => {
             options={inventory}
             disableCloseOnSelect
             getOptionLabel={(item) => item.name}
+            onChange={handleSelectionChange} // Capture selection changes
             renderOption={(props, option, { selected }) => {
               const { key, ...optionProps } = props;
               return (
@@ -138,22 +132,24 @@ const RecipePage = () => {
       <Box
         display="flex"
         flexWrap="wrap"
-        justifyContent="center"
-        marginTop={2}
+        justifyContent={'right'}
+        marginRight={'10%'}
+
       >
         {recipes.map((recipe) => (
-          <Card key={recipe.id} sx={{ maxWidth: 345, margin: 2 }}>
+          <Card key={recipe.id} sx={{maxWidth: 350, margin: 2 }}>
             <CardMedia
               component="img"
               alt={recipe.title}
               height="140"
               image={recipe.image}
+
             />
             <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
+              <Typography sx={{ color: '#333131' }}gutterBottom variant="h6" component="div">
                 {recipe.title}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="h7" sx={{ color: '#333131' }}>
                 Used Ingredients: {recipe.usedIngredientCount}<br />
                 Missed Ingredients: {recipe.missedIngredientCount}<br />
                 Likes: {recipe.likes}
