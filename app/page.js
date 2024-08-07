@@ -169,13 +169,13 @@ export default function Home() {
             />
             <Button 
               variant="outlined"
-              
+              sx={{color:'#333131'}}
               onClick={() => {
                 addItem(itemName);
                 setItemName("");
                 handleClose();
               }}
-              sx={{color:'#333131'}}
+              
             >
               Add
             </Button>

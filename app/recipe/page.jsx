@@ -9,23 +9,25 @@ import {
   Typography,
   Button,
   Checkbox,
-  Select,
-  MenuItem,
   FormControl,
   InputLabel,
   Card,
   CardContent,
+  Select,
+  MenuItem
 } from "@mui/material";
 import Groq from "groq-sdk"; // Ensure the correct import for Groq SDK
 import Markdown from "react-markdown";
+
 
 const RecipePage = () => {
   const inventory = useInventoryData();
   const [selectedItems, setSelectedItems] = useState([]);
   const [recipeContent, setRecipeContent] = useState("");
-  const [cuisine, setCuisine] = useState(""); // Default cuisine
-  const [dietaryRestriction, setDietaryRestriction] = useState(""); // Default dietary restriction
-  const [numberOfPeople, setNumberOfPeople] = useState(); // Default number of people
+  const [cuisine, setCuisine] = useState("Any"); // Default cuisine
+  const [dietaryRestriction, setDietaryRestriction] = useState("None"); // Default dietary restriction
+  const [numberOfPeople, setNumberOfPeople] = useState("1"); // Default number of people as string
+  const [errorMessage, setErrorMessage] = useState(""); // State for error message
 
   const groq = new Groq({
     apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY,
@@ -34,14 +36,14 @@ const RecipePage = () => {
 
   const getGroqChatCompletion = async () => {
     try {
+      const ingredientsList = selectedItems.map(item => `${item.name} (${item.amount || "unknown amount"})`).join(", ");
       return groq.chat.completions.create({
         messages: [
           {
-            role: "user", // Ensure role is set correctly
-            content: `Create a creative but edible recipe using ONLY these ingredients: ${selectedItems.map(item => item.name).join(", ")}. The recipe should feed ${numberOfPeople} people, the dietary restriction is ${dietaryRestriction}, and the cuisine is ${cuisine}. Do not add extra items except for pantry items (water, spices, etc). Output only the recipe nothing extra, the first line should be the title of the recipe. Bold all the title, ingredients header, and instructions headers.`,
+            role: "user",
+            content: `Create a creative but edible recipe using ONLY these ingredients: ${ingredientsList}. The recipe should feed ${numberOfPeople} people, the dietary restriction is ${dietaryRestriction}, and the cuisine is ${cuisine}. Do not add extra items except for pantry items (water, spices, etc). Output only the recipe nothing extra, the first line should be the title of the recipe. Bold all the title, ingredients header, and instructions headers.`,
           }
         ],
-        
         model: "llama3-8b-8192",
       });
     } catch (error) {
@@ -49,16 +51,23 @@ const RecipePage = () => {
     }
   };
 
-  // Function to fetch recipe from GROQ API
   const fetchRecipe = async () => {
+    if (selectedItems.length === 0) {
+      setErrorMessage("Please select at least one ingredient to generate a recipe.");
+      return;
+    }
+    if (!numberOfPeople || isNaN(numberOfPeople) || numberOfPeople <= 0) {
+      setErrorMessage("Please specify a valid number of people.");
+      return;
+    }
+    setErrorMessage(""); // Clear any previous error messages
     try {
       const chatCompletion = await getGroqChatCompletion();
       console.log("Chat Completion Response:", chatCompletion); // Log the response for debugging
   
-      // Ensure chatCompletion and choices array are valid
       if (chatCompletion && chatCompletion.choices && chatCompletion.choices.length > 0) {
         const messageContent = chatCompletion.choices[0]?.message?.content || "";
-        setRecipeContent(messageContent); // Set the content string directly
+        setRecipeContent(messageContent);
       } else {
         console.error("Unexpected response structure:", chatCompletion);
       }
@@ -66,7 +75,7 @@ const RecipePage = () => {
       console.error("Error fetching chat completion:", error);
     }
   };
-  // Function to handle item selection
+
   const handleToggle = (item) => {
     setSelectedItems((prevSelected) =>
       prevSelected.includes(item)
@@ -86,13 +95,13 @@ const RecipePage = () => {
       <Box display="flex" flexDirection="row" width="100%">
         {/* Inventory List on the left side */}
         <Box
-          sx={{ color: "#333131" , marginBottom: 4 }}
+          sx={{ color: "#333131", marginBottom: 4 }}
           width="30%"
           display="flex"
           flexDirection="column"
           padding={6}
+          height="100vh"
           borderRight="1px solid #333131"
-          
         >
           <Autocomplete
             multiple
@@ -124,20 +133,14 @@ const RecipePage = () => {
               />
             )}
           />
-          <FormControl fullWidth sx={{ marginBottom: 2, marginTop: 2 }}>
-            <InputLabel id="demo-simple-select-label">Cuisine</InputLabel>
-            <Select
-              value={cuisine}
-              onChange={(e) => setCuisine(e.target.value)}
-              label="Cuisine"
-              
-            >
-              <MenuItem value="Italian">Italian</MenuItem>
-              <MenuItem value="Mexican">Mexican</MenuItem>
-              <MenuItem value="Indian">Indian</MenuItem>
-              <MenuItem value="Chinese">Indian</MenuItem>
-            </Select>
-          </FormControl>
+          <TextField
+            label="Cuisine"
+            value={cuisine}
+            onChange={(e) => setCuisine(e.target.value)}
+            placeholder="Type in the cuisine"
+            fullWidth
+            sx={{ marginBottom: 2, marginTop: 2 }}
+          />
 
           <FormControl fullWidth sx={{ marginBottom: 2 }}>
             <InputLabel>Dietary Restriction</InputLabel>
@@ -150,23 +153,23 @@ const RecipePage = () => {
               <MenuItem value="Vegetarian">Vegetarian</MenuItem>
               <MenuItem value="Vegan">Vegan</MenuItem>
               <MenuItem value="Pescatarian">Pescatarian</MenuItem>
+              <MenuItem value="Gluten Free">Gluten Free</MenuItem>
+              <MenuItem value="Dairy Free">Dairy Free</MenuItem>
+              <MenuItem value="Nut Free">Nut Free</MenuItem>
+              <MenuItem value="Low Carb">Low Carb</MenuItem>
+              <MenuItem value="Keto">Keto</MenuItem>
             </Select>
           </FormControl>
 
-          <FormControl fullWidth sx={{ marginBottom: 2 }}>
-            <InputLabel>Number of People</InputLabel>
-            <Select
-              value={numberOfPeople}
-              onChange={(e) => setNumberOfPeople(e.target.value)}
-              label="Number of People"
-            >
-              <MenuItem value={1}>1</MenuItem>
-              <MenuItem value={2}>2</MenuItem>
-              <MenuItem value={2}>3</MenuItem>
-              <MenuItem value={4}>4</MenuItem>
-              <MenuItem value={6}>6</MenuItem>
-            </Select>
-          </FormControl>
+          <TextField
+            label="Number of People"
+            type="number"
+            value={numberOfPeople}
+            onChange={(e) => setNumberOfPeople(e.target.value)}
+            fullWidth
+            sx={{ marginBottom: 2 }}
+            InputProps={{ inputProps: { min: 1 } }} // Ensure only positive numbers can be entered
+          />
         </Box>
 
         {/* Recipe Generator on the right side */}
@@ -181,24 +184,33 @@ const RecipePage = () => {
             Recipe Generator
           </Typography>
           <Button
-            variant="outlined"
-            sx={{ color: "#333131", marginTop: 2 }}
+            variant="text"
+            sx={{ color: '#333131', '&:hover': { backgroundColor: '#E6E2DA' }, marginTop: 2 }}
             onClick={fetchRecipe}
           >
             Generate Recipe
           </Button>
 
-          <Box width="90%"display="flex" flexDirection="column" alignItems="right" marginTop={2}>
-          <Markdown>{recipeContent}</Markdown> {/* Use recipeContent as string */}
-        </Box>
+          {errorMessage && (
+            <Typography sx={{ color: '#8B0000', marginTop: 2 }}>
+              {errorMessage}
+            </Typography>
+          )}
+
+          <Box width="80%" display="flex" flexDirection="column" alignItems="right" marginTop={4}>
+            <Card sx={{ backgroundColor: '#E6E2DA' }}>
+              <CardContent>
+                <Typography sx={{ color: "#333131" }}>
+                  <Markdown>
+                    {recipeContent}
+                  </Markdown>
+                </Typography>
+              </CardContent>
+            </Card>
+          </Box>
         </Box>
       </Box>
-
-      {/* Recipe Display */}
-
-        
-      </Box>
-
+    </Box>
   );
 };
 
