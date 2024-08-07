@@ -188,11 +188,6 @@ export default function Home() {
                       backgroundColor: '#E6E2DA' }}} onClick={() => handleOpen()}>
           Add New Item
         </Button>
-        <Button sx={{ color: '#333131',
-                  '&:hover': {
-                      backgroundColor: '#E6E2DA' }}} onClick={() => handleOpen()}>
-          Upload Photo
-        </Button>
       </ButtonGroup>
       <Box width="800px" height="400px" bgcolor="#F6F5F3" display="flex" flexDirection="column">
         <Box
