@@ -1,7 +1,7 @@
 'use client';
 import "../globals.css";
 import React, { useState } from "react";
-import { useInventoryData } from "/Users/aryapatel/pantry-pal/app/page.js";
+import { useInventoryData } from "../page.js";
 import {
   TextField,
   Autocomplete,
