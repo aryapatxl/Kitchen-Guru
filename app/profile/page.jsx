@@ -17,7 +17,7 @@ const Profile = () => {
 
     return (
         <div className="p-4">
-            {loading ? (<p>Loading...</p>) : user ? (<p>Welcome, {user.displayName}! You are logged into the profile.</p>) : (<p>You musta be loggin</p>)}
+            {loading ? (<p>Loading...</p>) : user ? (<p>Welcome, {user.displayName}! You are logged into the profile.</p>) : (<p>Please login or create an account.</p>)}
         
         </div>
     )
