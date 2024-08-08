@@ -21,5 +21,5 @@ The app lets users create an account through Google, add items and remove items 
 - **Deployment:** Vercel with CI/CD
 
 ## Demo Video
-
+([https://github.com/aryapatxl/Kitchen-Guru/blob/main/KitchenGuru.mov])
 If you have any questions or need further assistance, please contact me at [aryaxrp@gmail.com].
