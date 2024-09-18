@@ -41,7 +41,7 @@ const RecipePage = () => {
         messages: [
           {
             role: "user",
-            content: `Create a creative but edible recipe using ONLY these ingredients: ${ingredientsList}. The recipe should feed ${numberOfPeople} people, the dietary restriction is ${dietaryRestriction}, and the cuisine is ${cuisine}. Do not add extra items except for pantry items (water, spices, etc). Output only the recipe nothing extra, the first line should be the title of the recipe. Bold all the title, ingredients header, and instructions headers. Also, give precise measurements for the reciepe.`,
+            content: `Create a creative but edible recipe using ONLY these ingredients: ${ingredientsList}. The recipe should feed ${numberOfPeople} people, the dietary restriction is ${dietaryRestriction}, and the cuisine is ${cuisine}. Do not add extra items except for pantry items (water, spices, etc). Output only the recipe nothing extra, the first line should be the title of the recipe. Bold all the title, ingredients header, and instructions headers. Also, give precise measurements for the recipe and if the ingrediants combo is really weird you can make multiple dishes so it is not too random!`,
           }
         ],
         model: "llama3-8b-8192",
